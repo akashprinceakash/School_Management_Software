@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Table, Button, Modal } from 'react-bootstrap';
 
-// Student Module
+
 const Student = () => {
   const [students, setStudents] = useState([]);
   const [name, setName] = useState('');
@@ -29,6 +29,7 @@ const Student = () => {
       .then((data) => setStudents([...students, data]))
       .catch((error) => console.error('Error:', error));
   };
+
   const handleUpdateStudent = (student) => {
     setUpdateStudent(student);
     setShowUpdateStudentModal(true);
@@ -37,26 +38,26 @@ const Student = () => {
   const handleUpdateStudentSubmit = (event) => {
     event.preventDefault();
     const updatedStudent = { ...updateStudent };
-    // Update student data in API or database
-    fetch(`/api/students/${updatedStudent.id}`, {
+    fetch(`http://localhost:3000/api/students/${updatedStudent._id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedStudent),
     })
-      .then(response => response.json())
+      .then((response) => response.json())
       .then((data) => {
-        setStudents(students.map((student) => (student.id === data.id ? data : student)));
+        setStudents(students.map((student) => (student._id === data._id ? data : student)));
         setShowUpdateStudentModal(false);
-      });
+      })
+      .catch(error => console.error('Error:', error));
   };
 
   const handleDeleteStudent = (studentId) => {
-    // Delete student data in API or database
-    fetch(`/api/students/${studentId}`, { method: 'DELETE' })
+    fetch(`http://localhost:3000/api/students/${studentId}`, { method: 'DELETE' })
       .then(response => response.json())
       .then(() => {
-        setStudents(students.filter((student) => student.id !== studentId));
-      });
+        setStudents(students.filter((student) => student._id !== studentId));
+      })
+      .catch(error => console.error('Error:', error));
   };
 
   return (
@@ -64,8 +65,8 @@ const Student = () => {
       <Row>
         <Col>
           <h2>Students</h2>
-          <Table striped bordered hover>
-            <thead>
+          <Table striped bordered hover cellSpacing={20}>
+            <thead >
               <tr>
                 <th>ID</th>
                 <th>Name</th>
@@ -76,14 +77,14 @@ const Student = () => {
             </thead>
             <tbody>
               {students.map((student) => (
-                <tr key={student.id}>
-                  <td>{student.id}</td>
+                <tr key={student._id}>
+                  <td>{student._id}</td>
                   <td>{student.name}</td>
                   <td>{student.email}</td>
                   <td>{student.contact}</td>
                   <td>
-                    <Button variant="primary" onClick={() => handleUpdateStudent(student)}>Update</Button>
-                    <Button variant="danger" onClick={() => student.id && handleDeleteStudent(student.id)}>Delete</Button>
+                    <Button variant="primary" onClick={() => handleUpdateStudent(student)} className='btn btn-danger' >Update</Button>
+                    <Button variant="danger" onClick={() => handleDeleteStudent(student._id)} className='btn btn-primary'>Delete</Button>
                   </td>
                 </tr>
               ))}
@@ -91,23 +92,16 @@ const Student = () => {
           </Table>
         </Col>
         <Col>
-        {/* https://github.com/akashprinceakash/School_Management_Software.git */}
           <h2>Create Student</h2>
           <form onSubmit={handleSubmit}>
-            <label>
-              Name:
-              <input type="text" value={name} onChange={(event) => setName(event.target.value)} />
-            </label>
+            <label>Name:</label>
+            <input type="text" value={name} onChange={(event) => setName(event.target.value)} />
             <br />
-            <label>
-              Email:
-              <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} />
-            </label>
+            <label>Email:</label>
+            <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} />
             <br />
-            <label>
-              Contact:
-              <input type="text" value={contact} onChange={(event) => setContact(event.target.value)} />
-            </label>
+            <label>Contact:</label>
+            <input type="text" value={contact} onChange={(event) => setContact(event.target.value)}  minLength="10" maxLength="10"/>
             <br />
             <Button type="submit">Create</Button>
           </form>
@@ -120,13 +114,13 @@ const Student = () => {
         <Modal.Body>
           <form onSubmit={handleUpdateStudentSubmit}>
             <label>ID:</label>
-            <input type="text" value={updateStudent.id} disabled />
+            <input type="text" value={updateStudent._id} disabled />
             <br />
             <label>Name:</label>
             <input type="text" value={updateStudent.name} onChange={(e) => setUpdateStudent({ ...updateStudent, name: e.target.value })} />
             <br />
             <label>Contact:</label>
-            <input type="text" value={updateStudent.contact} onChange={(e) => setUpdateStudent({ ...updateStudent, contact: e.target.value })} />
+            <input type="text" value={updateStudent.contact} onChange={(e) => setUpdateStudent({ ...updateStudent, contact: e.target.value })} minLength="10" maxLength="10" />
             <br />
             <Button variant="primary" type="submit">Update</Button>
           </form>

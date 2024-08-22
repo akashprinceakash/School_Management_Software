@@ -1,4 +1,3 @@
-// Marks Module
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Table, Button } from 'react-bootstrap';
 const Marks = () => {
@@ -32,12 +31,11 @@ const Marks = () => {
         <Row>
           <Col>
             <h2>Marks</h2>
-            <Table striped bordered hover>
+            <Table striped bordered hover cellSpacing={20}>
               <thead>
                 <tr>
                   <th>Student ID</th>
-                  <th>Student Name</th>
-                  <th>Teacher Name</th>
+                  <th>Teacher ID</th>
                   <th>Subject</th>
                   <th>Marks</th>
                 </tr>
@@ -46,8 +44,7 @@ const Marks = () => {
                 {marks.map((mark) => (
                   <tr key={mark._id}>
                     <td>{mark.studentId}</td>
-                    <td>{mark.studentName}</td>
-                    <td>{mark.teacherName}</td>
+                    <td>{mark.teacherId}</td>
                     <td>{mark.subject}</td>
                     <td>{mark.marksValue}</td>
                   </tr>
@@ -57,7 +54,7 @@ const Marks = () => {
           </Col>
           <Col>
             <h2>Create Mark</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} >
               <label>
                 Student ID:
                 <input type="text" value={studentId} onChange={(event) => setStudentId(event.target.value)} />
