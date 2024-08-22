@@ -27,6 +27,7 @@ const markSchema = new mongoose.Schema({
   teacherId: String,
   subject: String,
   marksValue: Number,
+  
 });
 // netstat -ano | findstr :3000 taskkill /PID <PID> /F  terminates port number
 
@@ -60,13 +61,15 @@ app.put('/api/students/:id', async (req, res) => {
 });
 
 app.delete('/api/students/:id', async (req, res) => {
-  try{
-    const studentId = req.params._id;
- const result= await Student.dea(studentId);
-  res.send(result);
-  }
-  catch(err){
-    res.status(500).json(err);
+  try {
+    const studentId = req.params.id;
+    const result = await Student.findByIdAndDelete(studentId);
+    if (!result) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    res.json({ message: 'Student deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
   }
 });
 
@@ -91,14 +94,26 @@ app.get('/api/teachers/:id', async (req, res) => {
 });
 
 app.put('/api/teachers/:id', async (req, res) => {
-  const teacher = await Teacher.findByIdAndUpdate(req.params.id, req.body, { new: true });
-  res.json(teacher);
+  try {
+    const teacher = await Teacher.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(teacher);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
 });
 
 app.delete('/api/teachers/:id', async (req, res) => {
-  await Teacher.findByIdAndRemove(req.params.id);
-  res.json({ message: 'Teacher deleted successfully' });
+  try {
+    const result = await Teacher.findByIdAndDelete(req.params.id);
+    if (!result) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+    res.json({ message: 'Teacher deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+  }
 });
+
 
 // Marks API
 app.get('/api/marks', async (req, res) => {
